@@ -1,0 +1,281 @@
+{
+"settings": {
+	"application": {
+		"title": "Collect",
+		"theme": "a",
+		"background": "mobile/images/bg_texture.png",
+		"cookie-days-life": 1,
+		"exportFolder": "export/",
+		"backupFolder": "backup/"
+	},
+	"developer": {
+		"name": "Patrick Cullen",
+		"email": "patrickmcullen@gmail.com"
+	},
+	"database": {
+		"type": "sqlite",
+		"filename": "../app/database.sqlite",
+		"host": "",
+		"port": "",
+		"user": "",
+		"pass": ""
+	}
+  
+},
+
+"model": {
+
+	"login": {
+		"persist": false,
+		"field": {
+			"email": { "type": "string", "req": true, "regex": "email" },
+			"password": { "type": "string", "req": true, "min": 6, "max": 99 }
+		}
+	},
+	
+	"cookie": {
+		"persist": true, "allowClientCache": false, "exportable": false,
+		"field": {
+			"user": { "type": "integer", "req": true },
+			"cookie": { "type": "string", "req": true, "min": 20, "max": 99 },
+			"cdate": { "type": "datetime", "req": true }
+		}
+	},
+	
+	"backup": {
+		"persist": true, "allowClientCache": false, "exportable": false, "readonly": true,
+		"field": {
+			"datetime": { "type": "date", "req": true, "regex": "datetime", "description": "Date and time of backup" },
+			"filename": { "type": "string", "req": true, "min": 2, "max": 150, "regex": "text", "description": "Filename" },
+			"user": { "type": "integer", "req": true, "control": "select", "description": "The user that created the backup" }
+		},
+		"view": {
+			"default": {
+				"field": [{"source":"datetime"}, {"source":"user.name"}],
+				"filter": []
+			},
+			"OneWeek": {
+				"title": "The Last Week",
+				"field": [{"source":"datetime"}, {"source":"user.name"}],
+				"filter": [{"a":"backup.datetime", "o":"<", "b":"now" }]
+			},
+			"OneMonth": {
+				"title": "The Last Month",
+				"field": [{"source":"datetime"}, {"source":"user.name"}],
+				"filter": [{"a":"backup.datetime", "o":"<", "b":"now" }]
+			}
+		},
+		"action": {
+			"backup": { "title": "Backup Now", "per": "class", "ss_handler": "backup", "css": "backup" }
+		}
+	},
+
+	"user": {
+		"persist": true, "allowClientCache": false, "exportable": true,
+		"field": {
+			"name": { "type": "string", "req": true, "min": 2, "max": 50, "regex": "text", "description": "Users full name" },
+			"shortName": { "type": "string", "min": 1, "max": 15, "regex": "text", "description": "Displayed in the system and logs" },
+			"email": { "type": "string", "req": true, "regex": "email" },
+			"password": { "type": "string", "req": true, "hidden": true, "regex": "password", "min": 6, "max": 99, "encrypt": true },
+			"gender": { "type": "integer", "req": false, "control": "select", "description": "Gender of the user" },
+			"active": { "type": "boolean", "options": {"y":"Active","n":"Disabled"}, "default": "1" },
+			"locked": { "type": "boolean", "hidden": true, "default": "0" },
+			"role": { "type": "rel-many", "description": "Roles to which this user belongs", "control": "checklist" }
+		},
+		"view": {
+			"default": {
+				"field": [{"source":"name"}, {"source":"email"}],
+				"filter": [{"a":"user.locked", "o":"=", "b":"0" }]
+			},
+			"disabled": {
+				"title": "Disabled Users",
+				"field": [{"source":"name"}, {"source":"email"}],
+				"filter": [
+					{"a":"user.locked", "o":"=", "b":"0" },
+					{"a":"user.active", "o":"=", "b":"0" }
+				]
+			}
+		},
+		"insert": [{ 
+			"id": 1,
+			"name": "Developer Account", "shortName": "Dev",
+			"email": "joe@bloggs.com", "password": "16d7a4fca7442dda3ad93c9a726597e4", "gender": "0",
+			"active": 1, "locked": 0
+		}]
+	},
+
+	"role": {
+		"persist": true, "allowClientCache": true, "exportable": true,
+		"field": {
+			"name": { "type": "string", "req": true, "min": 2, "max": 50, "regex": "text", "description": "The roles name" },
+			"shortName": { "type": "string", "min": 1, "max": 15, "regex": "text", "description": "Displayed in the system and logs" },
+			"active": { "type": "boolean", "options": {"y":"Active","n":"Disabled"}, "default": "1" }
+		},
+		"view": {
+			"_checklist": { "field": [{"source":"name"}], "filter": [{"a":"active", "o":"=", "b":"1" }] },
+			"_lookup": { "field": [{"source":"name"}], "filter": [{"a":"active", "o":"=", "b":"1" }] },
+			"default": {
+				"title": "Active Roles",
+				"field": [{"source":"name"}, {"source":"shortName"}],
+				"filter": [{"a":"role.active", "o":"=", "b":"1" }]
+			},
+			"disabled": {
+				"title": "Disabled Roles",
+				"field": [{"source":"name"}, {"source":"shortName"}],
+				"filter": [{"a":"role.active", "o":"=", "b":"0" }]
+			}
+		},
+		"insert": [
+			{ "id": 1, "name": "System Administrator", "shortName": "SysAdm", "active": "1" },
+			{ "id": 2, "name": "Manager", "shortName": "Mngr", "active": "1" },
+			{ "id": 3, "name": "Data Capture", "shortName": "Data", "active": "1" }
+		]
+	},
+
+	"gender": {
+		"persist": true, "allowClientCache": true, "exportable": true,
+		"field": {
+			"name": { "type": "string", "req": true, "min": 2, "max": 15, "regex": "text", "description": "The gender name." },
+			"shortName": { "type": "string", "min": 1, "max": 1, "regex": "text", "description": "A short name showed in short places." }
+		},
+		"view": {
+			"_checklist": { "field": [{"source":"name"}], "filter": [] },
+			"_lookup": { "field": [{"source":"name"}], "filter": [] },
+			"default": { "field": [{"source":"name"}, {"source":"shortName"}] }
+		},
+		"insert": [
+			{ "id": 1, "name": "Male", "shortName": "M" },
+			{ "id": 2, "name": "Female", "shortName": "F" }
+		]
+	},
+	
+	"clientstate": {
+		"title": "States",
+		"persist": true, "allowClientCache": true, "exportable": true,
+		"field": {
+			"name": { "type": "string", "req": true, "min": 2, "max": 15, "regex": "text", "description": "The gender name." }
+		},
+		"view": {
+			"_checklist": { "field": [{"source":"name"}], "filter": [] },
+			"_lookup": { "field": [{"source":"name"}], "filter": [] },
+			"default": { "field": [{"source":"name"}] }
+		},
+		"insert": [
+			{ "id": 1, "name": "Current" },
+			{ "id": 2, "name": "Potential" },
+			{ "id": 3, "name": "Dormant" },
+			{ "id": 4, "name": "Cancelled" }
+		]
+	},
+	
+	"clientproduct": {
+		"title": "Products",
+		"persist": true, "allowClientCache": true, "exportable": true,
+		"field": {
+			"name": { "type": "string", "req": true, "min": 2, "max": 25, "regex": "text", "description": "The product name." }
+		},
+		"view": {
+			"_checklist": { "field": [{"source":"name"}], "filter": [] },
+			"_lookup": { "field": [{"source":"name"}], "filter": [] },
+			"default": { "field": [{"source":"name"}] }
+		},
+		"insert": [
+			{ "id": 1, "name": "Capital Investment" },
+			{ "id": 2, "name": "Stocks" },
+			{ "id": 3, "name": "Insurance" },
+			{ "id": 4, "name": "Hedge Fund" }
+		]
+	},
+	
+	"client": {
+		"persist": true, "allowClientCache": false, "exportable": false,
+		"field": {
+			"firstname": { "type": "string", "req": true, "min": 2, "max": 50, "regex": "text", "description": "First Name" },
+			"lastname": { "type": "string", "req": true, "min": 2, "max": 50, "regex": "text", "description": "Last Name" },
+			"email": { "type": "string", "req": true, "regex": "email" },
+			"portfolio": { "type": "integer", "control": "input", "default": "", "req": false },
+			"clientproduct": { "type": "rel-many", "description": "Products this client uses", "control": "checklist" },
+			"clientstate": { "type": "integer", "req": false, "control": "select", "description": "State" }
+		},
+		"view": {
+			"default": {
+				"field": [{"source":"lastname"}, {"source":"firstname"}],
+				"filter": []
+			},
+			"disabled": {
+				"title": "R1m+",
+				"field": [{"source":"lastname"}, {"source":"portfolio"}],
+				"filter": [
+					{"a":"portfolio", "o":">", "b":"1000000" }
+				]
+			}
+		}
+	},
+
+
+	"todo": {
+		"persist": true, "allowClientCache": false, "exportable": true,
+		"field": {
+			"note": { "type": "string", "req": true, "min": 1, "max": 150, "regex": "text", "description": "What needs to be done?" },
+			"done": { "type": "boolean", "options": {"y":"Complete","n":"Pending"}, "default": "0" }
+		},
+		"view": {
+			"default": {
+				"field": [{"source":"note"}],
+				"filter": []
+			},
+			"pending": {
+				"title": "Pending",
+				"field": [{"source":"note"}],
+				"filter": [
+					{"a":"todo.done", "o":"=", "b":"0" }
+				]
+			},
+			"done": {
+				"title": "Already Done",
+				"field": [{"source":"note"}],
+				"filter": [
+					{"a":"todo.done", "o":"=", "b":"1" }
+				]
+			}
+		}
+	}
+
+},
+
+"action": {
+	"check": { "title": "", "asp_handler": "", "js_handler": "", "css": "" }
+},
+
+"menu": {
+
+	"default": {
+		"title": "Dashboard",
+		"option": [
+			{ "type": "divider", "title": "Tests & Demos" },
+			{ "type": "ovvw", "model": "todo", "title": "Todo list" },
+			{ "type": "ovvw", "model": "client", "title": "Clients" },
+			{ "type": "divider", "title": "System" },
+			{ "type": "menu", "source": "admin" }
+		]
+	},
+	
+	"admin": {
+		"title": "Admin",
+		"option": [
+			{ "type": "divider", "title": "Security" },
+			{ "type": "ovvw", "model": "user", "title": "Users" },
+			{ "type": "divider", "title": "Database" },
+			{ "type": "ovvw", "model": "backup", "title": "Backups" },
+			{ "type": "divider", "title": "Reference Data" },
+			{ "type": "ovvw", "model": "role", "title": "Roles" },
+			{ "type": "ovvw", "model": "clientproduct", "title": "Products" },
+			{ "type": "ovvw", "model": "clientstate", "title": "Client States" },
+			{ "type": "view", "model": "gender" }
+		]
+	}
+	
+}
+ 
+}
+	
