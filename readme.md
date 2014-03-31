@@ -54,6 +54,10 @@ There are three object models there: A client, a client state, and a product. Cl
 * <b>A dashboard</b> to hold it all together
 * The login procedure and managing users are also thrown in already
 
+A screengrab of the edit form for the above client model.
+![](http://2.bp.blogspot.com/-MzfsYbjzwNU/UzlZ232OdYI/AAAAAAAAAgo/kJxZOydbHJc/s1600/client_edit.PNG)
+
+
 ## Download and Setup
 You can freely download, copy, hack and sell this project. To setup your own mobile app, the general process is as follows:
 * Copy this project folder into your htdocs or respective web directory
@@ -64,3 +68,28 @@ You can freely download, copy, hack and sell this project. To setup your own mob
 
 ## Some Caveats
 As per usual, I offer this simply as a mostly working prototype. I was actively working on this project more than a year ago, but since then time and priority has led to the inevitable disregard of maintaining it. I still use it often when I need a little admin panel for a website or project I'm working on. I find it workable, but there are definitely bugs, and features half baked in. Have fun with it.
+
+## License
+
+(The MIT License)
+
+Permission is hereby granted, free of charge, to any person obtaining
+a copy of this software and associated documentation files (the
+'Software'), to deal in the Software without restriction, including
+without limitation the rights to use, copy, modify, merge, publish,
+distribute, sublicense, and/or sell copies of the Software, and to
+permit persons to whom the Software is furnished to do so, subject to
+the following conditions:
+
+The above copyright notice and this permission notice shall be
+included in all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED 'AS IS', WITHOUT WARRANTY OF ANY KIND,
+EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
+CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
+TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+
